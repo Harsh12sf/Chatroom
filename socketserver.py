@@ -19,6 +19,7 @@ try:
 	viewmsg='VIEW'
 	listuser=[]
 	ipuser=[]
+	ipuser_read_index = {}
 	chatlist=[]
 
 	def handle_client(conn,add):
@@ -42,12 +43,28 @@ try:
 					chatlist.append(message)
 					conn.send("Message Sent Successfully!".encode(format))
 				elif(msg==viewmsg):
+					# if no messages
 					if(len(chatlist) == 0):
 						print(" There has been no chat ")
+						
+					# if there are messages
 					elif(len(chatlist)!= 0):
 						mas =" "
-						for i in chatlist:
-							mas = mas + str(i) + "\n"
+						#check if user exists
+						if add in ipuser_read_index:
+							# grab the index for the messages he has already consumed. 
+							start =  ipuser_read_index[add]
+						else:
+							#otherswise start from beginning
+							start = 0
+						#iterate over the list
+						for i in range(start, len(chatlist)):
+							#join the elements
+							mas = mas + str(chatlist[i]) + "\n"
+						
+						#update the dictinoart/map
+						ipuser_read_index[add] = len(chatlist)
+						#send the mmessages
 						conn.send(mas.encode(format))
 		print(ipuser)
 		print(listuser)
